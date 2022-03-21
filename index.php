@@ -37,7 +37,7 @@ class Calculator {
     public string $kar;
     public string $szak;
 
-    public array $kotelezo_targy;
+    public string $kotelezo_targy;
     public array $kotval_targyak;
 
     public int $alappontszam;
@@ -52,16 +52,17 @@ class Calculator {
         $this->szak = $valasztott_szak['szak'];
 
         if($this->egyetem === "ELTE" && $this->kar === "IK" && $this->szak === "Programtervező informatikus") {
-            $this->kotelezo_targy = array("nev"=>"matematika");
+            $this->kotelezo_targy = "matematikaa";
             $this->kotval_targyak = array("biológia", "fizika", "informatika", "kémia");
         }
         if($this->egyetem === "PPKE" && $this->kar === "BTK" && $this->szak === "Anglisztika") {
-            $this->kotelezo_targy = array("nev"=>"angol", "tipus"=>"emelt");
+            $this->kotelezo_targy = "angol";
             $this->kotval_targyak = array("francia", "német", "olasz", "orosz", "spanyol", "történelem");
         }
 
     }
 
+    // érettségik
     function erettsegik($erettsegi_eredmenyek) {
         foreach($erettsegi_eredmenyek as $erettsegi) {
             $this->erettsegik[] = $erettsegi['nev'];
@@ -80,6 +81,11 @@ class Calculator {
             }
         }
 
+    }
+
+    // szakhoz kapcsolódó kötelező tárgy
+    function megvanAkotelezo($kotelezo_targy) {
+        return in_array($kotelezo_targy, $this->erettsegik) ? true : false;
     }
 
     // kötvál vizsgáka száma
@@ -114,27 +120,40 @@ class Calculator {
         // ha megvan minden kötelező tárgy
         if($this->megvanMindenKotelezo($this->kotelezo_targyak)) {
 
-            // ha van legalább egy kötvál vizsga
-            if($this->legalabbEgyKotvalVizsga($this->kotval_targyak)) {
+            // ha megvan a szakhoz kapcsolódó kötelező tárgy
+            if($this->megvanAkotelezo($this->kotelezo_targy)) {
 
-                // TODO
+                // ha van legalább egy kötvál vizsga
+                if($this->legalabbEgyKotvalVizsga($this->kotval_targyak)) {
+
+                    // TODO
+
+                } else {
+                    return "output: hiba, nem lehetséges a pontszámítás a legalább egy kötelezően választható érettségi tárgy hiánya miatt";
+                }
 
             } else {
-                return "output: hiba, nem lehetséges a pontszámítás a legalább egy kötelezően választható érettségi tárgy hiánya miatt";
+                return "output: hiba, nem lehetséges a pontszámítás a kötelező érettségi tárgy hiánya miatt";
             }
 
         } else {
             return "output: hiba, nem lehetséges a pontszámítás a kötelező érettségi tárgyak hiánya miatt";
         }
 
-        unset($this->erettsegik);
+        // unset($this->erettsegik);
 
     }
 
 }
 
-$calculator = new Calculator();
-echo "1. vizsga összpontszám: ".$calculator->pontszamito($exampleData0)."<br>";
-echo "2. vizsga összpontszám: ".$calculator->pontszamito($exampleData1)."<br>";
-echo "3. vizsga összpontszám: ".$calculator->pontszamito($exampleData2)."<br>";
-echo "4. vizsga összpontszám: ".$calculator->pontszamito($exampleData3)."<br>";
+$calculator0 = new Calculator();
+echo "1. vizsga összpontszám: ".$calculator0->pontszamito($exampleData0)."<br>";
+
+$calculator1 = new Calculator();
+echo "2. vizsga összpontszám: ".$calculator1->pontszamito($exampleData1)."<br>";
+
+$calculator2 = new Calculator();
+echo "3. vizsga összpontszám: ".$calculator2->pontszamito($exampleData2)."<br>";
+
+$calculator3 = new Calculator();
+echo "4. vizsga összpontszám: ".$calculator3->pontszamito($exampleData3)."<br>";
