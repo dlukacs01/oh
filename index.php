@@ -43,6 +43,7 @@ class Calculator {
     public string $kotelezo_targy;
     public array $kotval_targyak;
 
+    public int $pontertek_kotelezo = 0;
     public int $alappontszam;
     public int $tobbletpontszam;
     public int $osszpontszam;
@@ -120,6 +121,23 @@ class Calculator {
 
     }
 
+    // kötelező tárgyak pontértéke
+    function pontertekKotelezo($kotelezo_targyak, $erettsegi_eredmenyek) {
+
+        foreach ($kotelezo_targyak as $kotelezo_targy) {
+            foreach ($erettsegi_eredmenyek as $erettsegi) {
+                if($kotelezo_targy === $erettsegi['nev']) {
+                    $pct = $erettsegi['eredmeny']; // '15%'
+                    $int = str_replace('%', '', $pct); // 15
+                    $this->pontertek_kotelezo += $int;
+                }
+            }
+        }
+
+        return $this->pontertek_kotelezo;
+
+    }
+
     function calcAlap() {
         $this->alappontszam = ($kotelezo_targyak + $legjobb_valaszthato) * 2;
     }
@@ -148,7 +166,7 @@ class Calculator {
                     // ha van legalább egy kötvál vizsga
                     if($this->legalabbEgyKotvalVizsga($this->kotval_targyak)) {
 
-                        // TODO
+                        return $this->pontertekKotelezo($this->kotelezo_targyak, $exampleData['erettsegi-eredmenyek']);
 
                     } else {
                         return "output: hiba, nem lehetséges a pontszámítás a legalább egy kötelezően választható érettségi tárgy hiánya miatt";
