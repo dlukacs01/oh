@@ -13,6 +13,8 @@ class Jelentkezes {
     private int $legjobb_kotval_ponterteke = 0;
 
     private int $alappontszam = 0;
+    private int $tobbletpontszam = 0;
+    private int $osszpontszam = 0;
 
     // TODO constructor
     private array $dataset = array();
@@ -26,6 +28,7 @@ class Jelentkezes {
 
     private array $erettsegik = array();
     private array $erettsegik_kotvalok = array();
+    private array $erettsegik_tobbletpontok = array();
 
     private array $erettsegi_nevek = array();
     private array $erettsegi_pontok = array();
@@ -52,6 +55,9 @@ class Jelentkezes {
     }
     private function set_erettsegik() {
         $this->erettsegik = $this->dataset['erettsegi-eredmenyek'];
+    }
+    private function set_erettsegik_tobbletpontok() {
+        $this->erettsegik_tobbletpontok = $this->dataset['tobbletpontok'];
     }
     private function set_erettsegik_kotvalok() {
         foreach($this->erettsegik as $erettsegi) {
@@ -142,6 +148,37 @@ class Jelentkezes {
         $this->alappontszam = ($this->kotelezo_targy_ponterteke + $this->legjobb_kotval_ponterteke) * 2;
     }
 
+    /***** TOBBLETPONTSZAM *****/
+
+    private function set_tobbletpontszam_nyelv() {
+        foreach($this->erettsegik_tobbletpontok as $erettsegi_tobbletpont) {
+            if($erettsegi_tobbletpont['tipus'] === "B2") {
+                $this->tobbletpontszam += 28;
+            }
+            if($erettsegi_tobbletpont['tipus'] === "C1") {
+                $this->tobbletpontszam += 40;
+            }
+        }
+    }
+
+    private function set_tobbletpontszam_emelt() {
+        foreach($this->erettsegik as $erettsegi) {
+            if($erettsegi['tipus'] === "emelt") {
+                $this->tobbletpontszam += 50;
+            }
+        }
+    }
+
+    private function tobbletpontszam_max_value() {
+        $this->tobbletpontszam = $this->tobbletpontszam > 100 ? 100 : $this->tobbletpontszam;
+    }
+
+    /***** OSSZPONTSZAM *****/
+
+    private function set_osszpontszam() {
+        $this->osszpontszam = $this->alappontszam + $this->tobbletpontszam;
+    }
+
     public function pontszamitas($exampleData) {
 
         // TODO constructor
@@ -151,6 +188,7 @@ class Jelentkezes {
         $this->set_kotelezo_targy_kotval_targyak();
 
         $this->set_erettsegik();
+        $this->set_erettsegik_tobbletpontok();
         $this->set_erettsegik_kotvalok();
 
         $this->set_erettsegi_nevek();
@@ -159,13 +197,17 @@ class Jelentkezes {
         $this->set_kotelezo_targy_ponterteke();
         $this->set_legjobb_kotval_ponterteke();
         $this->set_alappontszam();
+        $this->set_tobbletpontszam_nyelv();
+        $this->set_tobbletpontszam_emelt();
+        $this->tobbletpontszam_max_value();
+        $this->set_osszpontszam();
 
         if($this->megvanMindenKotelezo()) {
             if($this->megvanAminimumPontszam()) {
                 if($this->megvanAkotelezo()) {
                     if($this->legalabbEgyKotval()) {
 
-                        return $this->alappontszam;
+                        return "alap: ".$this->alappontszam." tobblet: ".$this->tobbletpontszam." ossz: ".$this->osszpontszam;
 
                     } else {
                         return "nincs meg legalább egy kötvál";
