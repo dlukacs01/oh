@@ -1,6 +1,8 @@
 # oh
 OKTATASI HIVATAL exercise task for job interview (final exams score calculator, PHP OOP)
 
+Demo URL: https://dlukacs.com/oh/<br>
+
 HÁZI FELADAT<br>
 EGYSZERŰSÍTETT PONTSZÁMÍTÓ KALKULÁTOR<br><br>
 Feladat leírása<br><br>
